@@ -1,5 +1,9 @@
 #!/bin/bash
-
+log_it()
+{
+  printf "%s - %s\n" "`date +"%Y-%m-%d %H:%M:%S"`" "$*" >> $LOGFILE 2>&1;
+}
+LOGFILE="/home/master/brt_tracking/brt_tracking.log"
 cd /home/master/brt_tracking
 
 if [ $1 -gt 0 ]; then
@@ -10,10 +14,11 @@ fi
 
 DATA=$(date +"%d %B %Y" -d "$DAYS days ago")
 echo $DATA
+log_it "$DATA di acquisizione esiti"
 
 rm -f BRT_VAB.csv BRT_VAC.csv
 
-php -f test_imap.php "$DATA"
+php -f test_imap.php "$DATA" >> $LOGFILE
 
 for vab in *FNVAB*
 do 
@@ -22,10 +27,10 @@ do
 	fileext=${filename##*.}
 	if [ "$fileext" == "ZIP" ]; then
 		unzip -po $vab | awk -F";" '$1!="\"VABATB\""' | cat >> BRT_VAB.csv
-		echo "LAVORATO VAB ZIP: " $(zcat $vab | wc -l)
+		log_it "LAVORATO VAB ZIP: " $(zcat $vab | wc -l)
 	else
 		awk -F";" '$1!="\"VABATB\""' $vab >> BRT_VAB.csv
-		echo "LAVORATO VAB CSV: "$(wc -l $vab)
+		log_it "LAVORATO VAB CSV: "$(wc -l $vab)
 	fi
 	mv $vab brt_loaded/.
 done
@@ -37,18 +42,15 @@ do
 	#echo $filename "-" $fileext
 	if [ "$fileext" == "ZIP" ]; then
 		unzip -po $vac | awk -F";" '$1!="\"VACAAS\""' | cat >> BRT_VAC.csv
-		echo "LAVORATO VAC ZIP: " $(zcat $vac | wc -l)
+		log_it "LAVORATO VAC ZIP: " $(zcat $vac | wc -l)
 	else
 		awk -F";" '$1!="\"VACAAS\""'  $vac >> BRT_VAC.csv
-		echo "LAVORATO VAC CSV: "$(wc -l $vac)
+		log_it "LAVORATO VAC CSV: "$(wc -l $vac)
 	fi
 	mv $vac brt_loaded/.
 done
 
-mysql -umy_remote -pdb2012 minimegaprint_db --execute="LOAD DATA INFILE '/home/master/brt_tracking/BRT_VAB.csv' INTO TABLE BRT_VAB FIELDS TERMINATED BY ';' ENCLOSED BY '\"' LINES TERMINATED BY '\r\n'; SHOW WARNINGS"
+mysql -umy_remote -pdb2012 minimegaprint_db --execute="LOAD DATA INFILE '/home/master/brt_tracking/BRT_VAB.csv' INTO TABLE BRT_VAB FIELDS TERMINATED BY ';' ENCLOSED BY '\"' LINES TERMINATED BY '\r\n'; SHOW WARNINGS"  >> $LOGFILE
 #mysqlimport -v -umy_remote -pdb2012 --local --fields-terminated-by=';' --fields-enclosed-by='"' --lines-terminated-by='\n' minimegaprint_db BRT_VAC.csv
-mysql -umy_remote -pdb2012 minimegaprint_db --execute="LOAD DATA INFILE '/home/master/brt_tracking/BRT_VAC.csv' INTO TABLE BRT_VAC FIELDS TERMINATED BY ';' ENCLOSED BY '\"' LINES TERMINATED BY '\r\n'; SHOW WARNINGS"
+mysql -umy_remote -pdb2012 minimegaprint_db --execute="LOAD DATA INFILE '/home/master/brt_tracking/BRT_VAC.csv' INTO TABLE BRT_VAC FIELDS TERMINATED BY ';' ENCLOSED BY '\"' LINES TERMINATED BY '\r\n'; SHOW WARNINGS" >> $LOGFILE
 
-#mysqlimport -v -umy_remote -pdb2012 --local --fields-terminated-by=';' --fields-enclosed-by='"' --lines-terminated-by='\n' minimegaprint_db BRT_VAB.csv
-
-#unzip -po \*.ZIP | awk -F";" '$1!="\"VABATB\""' | cat >> VAB.csv

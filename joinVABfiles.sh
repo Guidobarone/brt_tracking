@@ -13,7 +13,7 @@ else
 fi 
 
 DATA=$(date +"%d %B %Y" -d "$DAYS days ago")
-echo $DATA
+
 log_it "Data di acquisizione esiti: $DATA "
 
 rm -f BRT_VAB.csv BRT_VAC.csv

@@ -6,10 +6,10 @@ log_it()
 LOGFILE="/home/master/brt_tracking/brt_tracking.log"
 cd /home/master/brt_tracking
 
-if [ "$1" -gt 0 ]; then
-	DAYS=$1
-else
+if [  $# -lt 1  ]; then
 	DAYS=0
+else
+	DAYS=$1
 fi 
 
 DATA=$(date +"%d %B %Y" -d "$DAYS days ago")

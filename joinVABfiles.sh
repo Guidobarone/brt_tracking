@@ -1,5 +1,7 @@
 #!/bin/bash
 
+cd /home/master/brt_tracking
+
 if [ $1 -gt 0 ]; then
 	DAYS=$1
 else
@@ -43,9 +45,9 @@ do
 	mv $vac brt_loaded/.
 done
 
-mysql -umy_remote -pdb2012 minimegaprint_db --execute="LOAD DATA INFILE '/home/master/imap/BRT_VAB.csv' INTO TABLE BRT_VAB FIELDS TERMINATED BY ';' ENCLOSED BY '\"' LINES TERMINATED BY '\r\n'; SHOW WARNINGS"
+mysql -umy_remote -pdb2012 minimegaprint_db --execute="LOAD DATA INFILE '/home/master/brt_tracking/BRT_VAB.csv' INTO TABLE BRT_VAB FIELDS TERMINATED BY ';' ENCLOSED BY '\"' LINES TERMINATED BY '\r\n'; SHOW WARNINGS"
 #mysqlimport -v -umy_remote -pdb2012 --local --fields-terminated-by=';' --fields-enclosed-by='"' --lines-terminated-by='\n' minimegaprint_db BRT_VAC.csv
-mysql -umy_remote -pdb2012 minimegaprint_db --execute="LOAD DATA INFILE '/home/master/imap/BRT_VAC.csv' INTO TABLE BRT_VAC FIELDS TERMINATED BY ';' ENCLOSED BY '\"' LINES TERMINATED BY '\r\n'; SHOW WARNINGS"
+mysql -umy_remote -pdb2012 minimegaprint_db --execute="LOAD DATA INFILE '/home/master/brt_tracking/BRT_VAC.csv' INTO TABLE BRT_VAC FIELDS TERMINATED BY ';' ENCLOSED BY '\"' LINES TERMINATED BY '\r\n'; SHOW WARNINGS"
 
 #mysqlimport -v -umy_remote -pdb2012 --local --fields-terminated-by=';' --fields-enclosed-by='"' --lines-terminated-by='\n' minimegaprint_db BRT_VAB.csv
 

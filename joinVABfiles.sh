@@ -6,7 +6,7 @@ log_it()
 LOGFILE="/home/master/brt_tracking/brt_tracking.log"
 cd /home/master/brt_tracking
 
-if [ $1 -gt 0 ]; then
+if [ "$1" -gt 0 ]; then
 	DAYS=$1
 else
 	DAYS=0

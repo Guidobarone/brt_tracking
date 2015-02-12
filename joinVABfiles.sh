@@ -14,11 +14,11 @@ fi
 
 DATA=$(date +"%d %B %Y" -d "$DAYS days ago")
 echo $DATA
-log_it "$DATA di acquisizione esiti"
+log_it "Data di acquisizione esiti: $DATA "
 
 rm -f BRT_VAB.csv BRT_VAC.csv
 
-php -f test_imap.php "$DATA" >> $LOGFILE
+php -f test_imap.php "$DATA" >> $LOGFILE 2>&1
 
 for vab in *FNVAB*
 do 
@@ -50,7 +50,7 @@ do
 	mv $vac brt_loaded/.
 done
 
-mysql -umy_remote -pdb2012 minimegaprint_db --execute="LOAD DATA INFILE '/home/master/brt_tracking/BRT_VAB.csv' INTO TABLE BRT_VAB FIELDS TERMINATED BY ';' ENCLOSED BY '\"' LINES TERMINATED BY '\r\n'; SHOW WARNINGS"  >> $LOGFILE
+mysql -umy_remote -pdb2012 minimegaprint_db --execute="LOAD DATA INFILE '/home/master/brt_tracking/BRT_VAB.csv' INTO TABLE BRT_VAB FIELDS TERMINATED BY ';' ENCLOSED BY '\"' LINES TERMINATED BY '\r\n'; SHOW WARNINGS"  >> $LOGFILE 2>&1
 #mysqlimport -v -umy_remote -pdb2012 --local --fields-terminated-by=';' --fields-enclosed-by='"' --lines-terminated-by='\n' minimegaprint_db BRT_VAC.csv
-mysql -umy_remote -pdb2012 minimegaprint_db --execute="LOAD DATA INFILE '/home/master/brt_tracking/BRT_VAC.csv' INTO TABLE BRT_VAC FIELDS TERMINATED BY ';' ENCLOSED BY '\"' LINES TERMINATED BY '\r\n'; SHOW WARNINGS" >> $LOGFILE
+mysql -umy_remote -pdb2012 minimegaprint_db --execute="LOAD DATA INFILE '/home/master/brt_tracking/BRT_VAC.csv' INTO TABLE BRT_VAC FIELDS TERMINATED BY ';' ENCLOSED BY '\"' LINES TERMINATED BY '\r\n'; SHOW WARNINGS" >> $LOGFILE 2>&1
 
